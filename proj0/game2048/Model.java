@@ -113,6 +113,11 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        board.setViewingPerspective(side);
+
+
+
+        board.setViewingPerspective(Side.NORTH);
 
         checkGameOver();
         if (changed) {
@@ -155,6 +160,14 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        for (int row = 0; row < b.size(); row++) {
+            for (int col = 0; col < b.size(); col++) {
+                Tile t = b.tile(col, row);
+                if (t != null && t.value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -166,6 +179,28 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        if (emptySpaceExists(b)) {
+            return true;
+        } else {
+            for (int row = 0; row < b.size(); row++) {
+                for (int col = 0; col < b.size(); col++) {
+                    Tile t = b.tile(col, row);
+                    if ( col + 1 < b.size()) {
+                        Tile right = b.tile(col + 1, row);
+                        if (t.value() == right.value()) {
+                            return true;
+                        }
+                    }
+                    if (row + 1 < b.size()) {
+                        Tile up = b.tile(col, row + 1);
+                        if (t.value() == up.value()) {
+                            return true;
+                        }
+                    }
+
+                }
+            }
+        }
         return false;
     }
 
