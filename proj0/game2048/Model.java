@@ -1,5 +1,6 @@
 package game2048;
 
+import javax.swing.border.TitledBorder;
 import java.util.Formatter;
 import java.util.Observable;
 
@@ -115,7 +116,30 @@ public class Model extends Observable {
         // changed local variable to true.
         board.setViewingPerspective(side);
 
+        for (int col = 0; col < board.size(); col++) {
 
+            boolean[] merged = new boolean[board.size()];
+
+            for (int row = board.size() - 2; row >= 0; row--) {
+                Tile t = board.tile(col, row);
+                if (t != null) {
+                    int targetRow = findTargetRow(board, col, row, merged);
+
+                    if(targetRow != row) {
+
+                        boolean isMerged = board.move(col, targetRow, t);
+
+                        changed = true;
+
+                        if (isMerged) {
+                            merged[targetRow] = true;
+
+                            score += board.tile(col, targetRow).value();
+                        }
+                    }
+                }
+            }
+        }
 
         board.setViewingPerspective(Side.NORTH);
 
@@ -241,5 +265,35 @@ public class Model extends Observable {
     /** Returns hash code of Model’s string. */
     public int hashCode() {
         return toString().hashCode();
+    }
+
+    /**
+     * helper function
+     * find the target row
+     */
+    private int findTargetRow(Board b, int col,int row, boolean[] merged) {
+        Tile currentTile = b.tile(col, row);
+
+        if (currentTile == null) {
+            return row;
+        }
+
+        int value = currentTile.value();
+
+        int targetRow = row;
+
+        for (int nextRow = row + 1; nextRow < b.size(); nextRow++) {
+            Tile nextTile = b.tile(col, nextRow);
+
+            if (nextTile == null) {
+                targetRow = nextRow;
+            } else {
+                if (nextTile.value() == value && !merged[nextRow]) {
+                    targetRow = nextRow;
+                }
+                break;
+            }
+        }
+        return targetRow;
     }
 }
